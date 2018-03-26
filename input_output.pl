@@ -1,9 +1,5 @@
-% Main functor
-main:- 
-    open('input.txt',read,Str), 
-    readLines(Str,LinesOfFile), 
-    close(Str), 
-    write(LinesOfFile),  nl.
+% Define module
+:- module(input_output,[readLines/2]).
 
 % Read all lines in file
 readLines(InStream,W):- 
