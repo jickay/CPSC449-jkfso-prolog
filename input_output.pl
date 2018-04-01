@@ -23,3 +23,8 @@ checkCharAndReadRest(end_of_file,[],_):-  !.
 checkCharAndReadRest(Char,[Char|Chars],InStream):- 
     get_code(InStream,NextChar), 
     checkCharAndReadRest(NextChar,Chars,InStream).
+
+% Output if error message produced and close program
+printErrorAndClose(ErrorMsg,OutputFileName):-
+    write(ErrorMsg,OutputFileName),
+    halt.

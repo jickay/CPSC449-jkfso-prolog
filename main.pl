@@ -17,7 +17,7 @@ main:-
 
     % Check parsed values for errors (Khalid)
 
-    % Check hard constraints (Fungai)
+    % Check hard constraints (Fungai, Jacky)
 
     % Check soft constraints
 
