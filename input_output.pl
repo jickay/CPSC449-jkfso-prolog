@@ -13,6 +13,20 @@ readLines(InStream,W):-
 % if char is blank space
 % checkCharAndReadRest(32,[],_):-  !. 
 
+% if char is % symbol for comment
+checkCharAndReadRest(37,[],_):-  
+    open('ErrorWhileParsingInputFile.txt',read,ErrorStream),
+    readLines(ErrorStream,ErrorTerm),
+    open('output.txt',write,OutputStream),%,[create([write])]),
+    printErrorAndClose(OutputStream,ErrorTerm). 
+
+% if char is # symbol for comment
+checkCharAndReadRest(35,[],_):-  
+        open('ErrorWhileParsingInputFile.txt',read,ErrorStream),
+        readLines(ErrorStream,ErrorTerm),
+        open('output.txt',write,OutputStream),%,[create([write])]),
+        printErrorAndClose(OutputStream,ErrorTerm). 
+
 % if at end of stream
 checkCharAndReadRest(-1,[],_):-  !. 
 
@@ -25,6 +39,8 @@ checkCharAndReadRest(Char,[Char|Chars],InStream):-
     checkCharAndReadRest(NextChar,Chars,InStream).
 
 % Output if error message produced and close program
-printErrorAndClose(ErrorMsg,OutputFileName):-
-    write(ErrorMsg,OutputFileName),
-    halt.
+% ErrorMsg is a stream
+printErrorAndClose(OutputFileStream,ErrorMsg):-
+    write(OutputFileStream,ErrorMsg), nl(OutputFileStream),
+    close(OutputFileStream).
+    %halt, %Closes SWI-Prolog, but probably needed for final version
