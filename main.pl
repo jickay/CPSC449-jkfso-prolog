@@ -1,5 +1,6 @@
 % Import other modules (aka other prolog files)
-:- use_module(input_output,[readLines/2]).
+:- use_module(input_output,[readLines/2,printErrorAndClose/2]).
+:- use_module(hardconstraints,[hasTooNear/3]).
 
 
 % Main functor
@@ -18,6 +19,7 @@ main:-
     % Check parsed values for errors (Khalid)
 
     % Check hard constraints (Fungai, Jacky)
+    hasTooNear(Matches,TooNear,1) -> printErrorAndClose("No valid solution possible!",OutputFileName);
 
     % Check soft constraints
 
