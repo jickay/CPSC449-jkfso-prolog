@@ -40,7 +40,8 @@ checkCharAndReadRest(Char,[Char|Chars],InStream):-
 
 % Output if error message produced and close program
 % ErrorMsg is a stream
-printErrorAndClose(OutputFileStream,ErrorMsg):-
+printErrorAndClose(FileName,ErrorMsg):-
+    open(FileName,write,OutputFileStream),
     write(OutputFileStream,ErrorMsg), nl(OutputFileStream),
     close(OutputFileStream).
     %halt, %Closes SWI-Prolog, but probably needed for final version

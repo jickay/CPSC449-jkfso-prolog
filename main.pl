@@ -19,7 +19,7 @@ main:-
     % Check parsed values for errors (Khalid)
 
     % Check hard constraints (Fungai, Jacky)
-    hasTooNear(Matches,TooNear,1) -> printErrorAndClose("No valid solution possible!",OutputFileName);
+    hasTooNear(Matches,TooNear,1) -> printErrorAndClose(OutputFileName,"No valid solution possible!");
 
     % Check soft constraints
 
