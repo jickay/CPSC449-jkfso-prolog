@@ -1,6 +1,8 @@
 % Import other modules (aka other prolog files)
 :- use_module(input_output,[readLines/2,printErrorAndClose/2]).
-:- use_module(hardconstraints,[hasTooNear/3]).
+:- use_module(labels,[checkLabels/1]).
+:- use_module(hardconstraints,[tooNear/4]).
+:- use_module(softconstraints1,[createAllMatches/2,filterValidMatches/5]).
 
 
 % Main functor
@@ -13,15 +15,18 @@ main:-
     readLines(Str,LinesOfFile),
 
     % Check file text for comments or label errors (Scott)
+    checkLabels(LinesOfFile),
 
     % Parse lines of text to get values (Oliver)
 
     % Check parsed values for errors (Khalid)
 
     % Check hard constraints (Fungai, Jacky)
-    hasTooNear(Matches,TooNear,1) -> printErrorAndClose(OutputFileName,"No valid solution possible!");
+    % tooNear(ListOfMatches,ListOfMatches,TooNear,ValidMatches),
 
     % Check soft constraints
+    createAllMatches(["A","B","C","D","E","F","G","H"],AllMatches),
+    filterValidMatches(AllMatches,Forced,Forbid,TooNear,ValidMatches),
 
     % Close file and write output
     close(Str), 
