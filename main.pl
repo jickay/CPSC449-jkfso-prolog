@@ -1,8 +1,9 @@
 % Import other modules (aka other prolog files)
-:- use_module(input_output,[readLines/2,printErrorAndClose/2]).
+:- use_module(input_output,[readLines/2,createSolution/3,printErrorAndClose/2]).
 :- use_module(labels,[checkLabels/1]).
 :- use_module(hardconstraints,[tooNear/4]).
 :- use_module(softconstraints1,[createAllMatches/2,filterValidMatches/5]).
+:- use_module(softconstraints2,[getBestMatches/6]).
 
 
 % Main functor
@@ -13,6 +14,7 @@ main:-
     % Open file and get lines of text
     open(InputFileName,read,Str), 
     readLines(Str,LinesOfFile),
+    close(Str), 
 
     % Check file text for comments or label errors (Scott)
     checkLabels(LinesOfFile),
@@ -27,7 +29,8 @@ main:-
     % Check soft constraints
     createAllMatches(["A","B","C","D","E","F","G","H"],AllMatches),
     filterValidMatches(AllMatches,Forced,Forbid,TooNear,ValidMatches),
+    getBestMatches(ValidMatches,ValidMatches,Grid,TooNear,Total,BestMatches),
 
     % Close file and write output
-    close(Str), 
-    write(LinesOfFile,OutputFileName),  nl.
+    createSolution(BestMatches,Total,Solution),
+    write(Solution,OutputFileName),  nl.

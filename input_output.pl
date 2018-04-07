@@ -1,5 +1,5 @@
 % Define module
-:- module(input_output,[readLines/2,printErrorAndClose/2]).
+:- module(input_output,[readLines/2,createSolution/3,printErrorAndClose/2]).
 
 % Read all lines in file
 readLines(InStream,W):- 
@@ -22,10 +22,10 @@ checkCharAndReadRest(37,[],_):-
 
 % if char is # symbol for comment
 checkCharAndReadRest(35,[],_):-  
-        open('ErrorWhileParsingInputFile.txt',read,ErrorStream),
-        readLines(ErrorStream,ErrorTerm),
-        open('output.txt',write,OutputStream),%,[create([write])]),
-        printErrorAndClose(OutputStream,ErrorTerm). 
+    open('ErrorWhileParsingInputFile.txt',read,ErrorStream),
+    readLines(ErrorStream,ErrorTerm),
+    open('output.txt',write,OutputStream),%,[create([write])]),
+    printErrorAndClose(OutputStream,ErrorTerm). 
 
 % if at end of stream
 checkCharAndReadRest(-1,[],_):-  !. 
@@ -45,3 +45,11 @@ printErrorAndClose(FileName,ErrorMsg):-
     write(OutputFileStream,ErrorMsg), nl(OutputFileStream),
     close(OutputFileStream).
     %halt, %Closes SWI-Prolog, but probably needed for final version
+
+% Create solution output
+createSolution(BestMatches,Quality,Solution):-
+    atomic_list_concat(BestMatches, ' ', MatchesSpaced),
+    append("Solution: ", MatchesSpaced, SolPart),
+    append(SolPart, "; Quality: ", NoQual),
+    append(NoQual, Quality, Solution).
+    

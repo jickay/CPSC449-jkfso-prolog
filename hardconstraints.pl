@@ -1,5 +1,5 @@
 % Define module
-:- module(hardconstraints,[]).
+:- module(hardconstraints,[tooNear/4]).
 
 % Hard constraint rules
 
@@ -10,17 +10,16 @@
 
 % Check for too-near invalid pairs
 tooNear([],_,_).
-tooNear([Matches|ListOfMatches],TooNear,Matches):-
+tooNear([Matches|ListMTail],ListOfMatches,TooNear,ValidMatches):-
     % head(ListOfMatches,Matches),
     noTooNear(Matches,Matches,TooNear) ->
-    tooNear(ListOfMatches,TooNear,[]) ;
-    tooNear(ListOfMatches,TooNear,Matches), true.
+    tooNear(ListMTail,TooNear,ValidMatches) ;
+    select(Matches,ListOfMatches,ValidMatches),
+    tooNear(ListMTail,TooNear,ValidMatches).
 
 % See if too-near violation in a set of matches
 noTooNear(_,[],_).
 noTooNear(Matches,[M|MTail],TooNear):-
-    % head(Matches,M),
-    % tail(Matches,MTail),
     checkLeft(M,Matches,TooNear),
     checkRight(M,Matches,TooNear),
     noTooNear(Matches,MTail,TooNear).
@@ -58,6 +57,3 @@ getRightIndex(Index,IndexR):-
 
 checkSame(X,Y):- X == Y.
 checkDiff(X,Y):- X \== Y.
-
-head([X|_],X).
-tail([_|X],X).
