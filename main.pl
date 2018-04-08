@@ -16,8 +16,10 @@ main:-
     readLines(Str,LinesOfFile),
     close(Str), 
 
+    split_string(LinesOfFile,"\n","",ListOfLines),
+
     % Check file text for comments or label errors (Scott)
-    checkLabels(LinesOfFile),
+    checkLabels(ListOfLines),
 
     % Parse lines of text to get values (Oliver)
 
