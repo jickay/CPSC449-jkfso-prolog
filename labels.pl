@@ -1,5 +1,5 @@
 %define module
-:- module(labels,[checkLabels/1]).
+:- module(labels,[checkLabels/1,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
 
 %Import readLines
 :- use_module(input_output,[readLines/2,printErrorAndClose/2]).
