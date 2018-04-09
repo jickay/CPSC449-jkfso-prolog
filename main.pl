@@ -13,7 +13,7 @@ main:-
 
     % Open file and get lines of text
     open(InputFileName,read,Str), 
-    readLines(Str,LinesOfFile),
+    readLines(Str,LinesOfFile,OutputFileName),
     close(Str), 
 
     split_string(LinesOfFile,"\n","",ListOfLines),
