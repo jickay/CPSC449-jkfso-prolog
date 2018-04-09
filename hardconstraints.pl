@@ -57,3 +57,14 @@ getRightIndex(Index,IndexR):-
 
 checkSame(X,Y):- X == Y.
 checkDiff(X,Y):- X \== Y.
+
+%Checks if elements in a list are distinct
+distinct([]).
+distinct([_,[]]).
+distinct([H|T]):-not(member(H,T)),distinct(T).
+
+%Checks if two lists have distinct elements
+distinct([],[]).
+distinct([], _).
+distinct(_, []).
+distinct([H|T], T2) :-not(member(H, T2)),distinct(T, T2).
