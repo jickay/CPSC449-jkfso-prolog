@@ -1,6 +1,6 @@
 % Import other modules (aka other prolog files)
 :- use_module(input_output,[readLines/2,createSolution/3,printErrorAndClose/2]).
-:- use_module(labels,[checkLabels/1,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
+:- use_module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
 :- use_module(hardconstraints,[tooNear/4]).
 :- use_module(softconstraints1,[createAllMatches/2,filterValidMatches/5]).
 :- use_module(softconstraints2,[getBestMatches/6]).
@@ -19,7 +19,7 @@ main:-
     split_string(LinesOfFile,"\n","",ListOfLines),
 
     % Check file text for comments or label errors (Scott)
-    checkLabels(ListOfLines),
+    checkLabels(ListOfLines,OutputFileName),
 
     get_forced_partial(ListOfLines, ForcedPartial),
     get_forbidden_machine(ListOfLines, ForbiddenMachine),

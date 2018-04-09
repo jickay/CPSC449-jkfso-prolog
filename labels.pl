@@ -1,5 +1,5 @@
 %define module
-:- module(labels,[checkLabels/1,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
+:- module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
 
 %Import readLines
 :- use_module(input_output,[readLines/2,printErrorAndClose/2]).
@@ -12,16 +12,16 @@ label("machine penalties:").
 label("too-near penalities").
 
 %Takes in list of lines from input, checks if the labels are all there
-checkLabels(ListOfLines):-
-        label(X), is_member(X, ListOfLines).
+checkLabels(ListOfLines, OutputFile):-
+        label(X), is_member(X, ListOfLines, OutputFile).
 
 %Recursively checks if X is a member of a list
-is_member(_,[]):-
-    printErrorAndClose('output.txt',"Error while parsing input file"),
+is_member(_,[], OutputFile):-
+    printErrorAndClose(OutputFile,"Error while parsing input file"),
     false.
-is_member(X,[X|_]):- !.
-is_member(X,[_|Ys]):-
-    is_member(X,Ys).
+is_member(X,[X|_],_):- !.
+is_member(X,[_|Ys],OutputFile):-
+    is_member(X,Ys,OutputFile).
 
 split(List, Pivot, Left, Right) :- append(Left, [Pivot|Right], List).
 
