@@ -1,35 +1,60 @@
-/**
- * first_line(List, FirstLine)
- * extracts the first line from the character array as delimited by newline characters
- */
 
-first_line(List, X) :-	/*newline base case*/
-	[Head|Tail] = List,
-	char_code(NL, 10),
-	Head = NL,
-	X = [].
-first_line(List, X) :-	/*single element (ie EOF) base case*/
-	length(List, 1), 
-	X = List.
-first_line(List, X) :-	/*recursive case*/
-	[Head|Tail] = List,
-	first_line(Tail, Y),
-	X = [Head|Y].
+
+/*
+ * parse_pairs(Lines, [[M,T]...[M,T]])
+ * Ex: parse_pairs([['(', 1, ',', A, ')'], ['(', 2, ',', B, ')']], X).
+ */
+parse_pairs(Lines, X) :-
+	Lines = [],
+	X = Lines. 
+parse_pairs(Lines, X):-	
+	[Head|Tail] = Lines,
+	parse_pair(Head, Head_pair),
+	parse_pairs(Tail, Y),
+	X = [Head_pair|Y].
 
 	
-/**
- * no_first_line(List, AllButFirst)
- * obtains the inverse of the function first_line, save for the \n 
+/*
+ * parse_triples(Lines, [[M,T,P]...[M,T,P]])
+ * Ex: parse_triples([['(', 1, ',', A, ',', 1,2, ')'], ['(', 2, ',', B, ',', 3,4, ')']], X).
  */
+parse_triples(Lines, X) :-
+	Lines = [],
+	X = Lines. 
+parse_triples(Lines, X):-	
+	[Head|Tail] = Lines,
+	parse_triple(Head, Head_pair),
+	parse_triples(Tail, Y),
+	X = [Head_pair|Y].
 
-no_first_line(List, X) :-	/*newline recursion interupt*/
-	[Head|Tail] = List,
-	char_code(NL, 10),
-	Head = NL,
-	X = Tail.
-no_first_line(List, X) :-	/*recursive case*/
-	[Head|Tail] = List,
-	no_first_line(Tail, X).
+	
+/*
+ * parse_penalty_grid(Lines, [[p1_1...p1_8]...[p8_1...p8_8]])
+ * Ex : parse_penalty_grid([[8,8,8,',',7,7,7,',',6,6,',',5,5,',',4,4,',',3,',',2,',',1], [8,',',7,',',6,',',5,',',4,',',3,',',2,',',1]], X).
+ */
+parse_penalty_grid(Lines, X) :-
+	Lines = [],
+	X = Lines. 
+parse_penalty_grid(Lines, X):-	
+	[Head|Tail] = Lines,
+	parse_penalty_row(Head, Head_pair),
+	parse_penalty_grid(Tail, Y),
+	X = [Head_pair|Y].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /** 
@@ -37,18 +62,17 @@ no_first_line(List, X) :-	/*recursive case*/
  * obtains the pair as a tuple from a line
  * Ex: parse_pair(['(', 1, ',', A, ')'], X).
 */
-
 parse_pair(Line, X) :-
 	nth(2, Line, Machine),
 	nth(4, Line, Task),
-	X = (Machine, Task).
+	X = [Machine, Task].
 
 	
 /**
-* 
-* Ex: parse_triple(['(', 1, ',', A, ',', 3, 4,')'], X).
-*/
-
+ * parse_triple(Line, [M,T,P])
+ * Third element of a triple is always a penalty
+ * Ex: parse_triple(['(', 1, ',', A, ',', 3, 4,')'], X).
+ */
 parse_triple(Line, X) :-
 	nth(2, Line, Machine),
 	nth(4, Line, Task),
@@ -56,7 +80,43 @@ parse_triple(Line, X) :-
 	parse_penalty_triple(PEN, PenaltyList),
 	concatenate_num(PenaltyList, PenaltyAtom),
 	number_atom(Penalty, PenaltyAtom),
-	X = (Machine, Task, Penalty).
+	X = [Machine, Task, Penalty].
+	
+	
+/** parse_penalty_row
+ * obtains a pentalty row as an 8-tuple (assumed to all be positive integers as per validation)
+ * Ex: parse_penalty_row([8,8,8, ',', 7,7,7, ',', 6,6, ',', 5,5, ',', 4,4, ',', 3, ',', 2, ',', 1], X).
+ */
+parse_penalty_row(Line, RemainingPenalties, X) :-	/*base case; no req penalties remain*/
+	RemainingPenalties = 0, 
+	X = [].
+parse_penalty_row(Line, RemainingPenalties, X) :-	/*actual recursive call, THREE ARGS, called by standard*/
+	grab_first_penalty(Line, Head),
+	drop_first_penalty(Line, Tail),
+	NewRemainingPenalties is RemainingPenalties - 1,
+	parse_penalty_row(Tail, NewRemainingPenalties, Y),
+	concatenate_num(Head, Head_atom),
+	X = [Head_atom|Y].
+parse_penalty_row(Line, X) :-	/*standard call, TWO ARGS ONLY, defaults to 8 loops*/
+		parse_penalty_row(Line, 8, X).	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
 	
 	
 /**
@@ -102,11 +162,43 @@ concatenate_num(List, X) :-
 	concatenate_num(Tail, Y),
 	atom_concat(H_atom, Y, X).
  	
-	
-	
- 
- 
- 
+/**
+ * Gets the first penalty of the row **as a character list**
+ * Ex: grab_first_penalty([8,8,8, ',', 7, ',', 6, ',', 5, ',', 4, ',', 3, ',', 2, ',', 1], X).
+ */
+grab_first_penalty(List, X) :-	/*Base case, delimited by comma*/
+	[Head|Tail] = List,
+	char_code(COM, 44),
+	Head = COM, 
+	X = [].
+grab_first_penalty(List, X) :-	/*single element (ie end of line) base case*/
+	length(List, 1), 
+	X = List.	
+grab_first_penalty(List, X):-	/*recursive case*/
+	[Head|Tail] = List,
+	grab_first_penalty(Tail, Y),
+	X = [Head|Y].
+
+/**
+ * drop_first_penalty
+ * obtains the inverse of the function grab_first_penalty, save for the ','
+ */
+drop_first_penalty(List, X) :-
+	List = [],
+	X = List.
+drop_first_penalty(List, X) :-	/*comma recursion interupt*/
+	[Head|Tail] = List,
+	char_code(COM, 44),
+	Head = COM,
+	X = Tail.
+drop_first_penalty(List, X) :-	/*newline recursion interupt*/
+	[Head|Tail] = List,
+	char_code(NL, 10),
+	Head = NL,
+	X = Tail.
+drop_first_penalty(List, X) :-	/*recursive case*/
+	[Head|Tail] = List,
+	drop_first_penalty(Tail, X).
  
  
  
