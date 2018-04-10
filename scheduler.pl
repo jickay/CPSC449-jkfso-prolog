@@ -6,8 +6,10 @@ getOutputName('output.txt').
 
 % Main functor
 main:-
-    % Get console argument values
+    % Get console argument values (COMMENT OUT FOR TESTING)
     current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
+
+    % Manually set input file (COMMENT OUT FOR FINAL VERS)
     % getInputName(InputFileName),
     % getOutputName(OutputFileName),
 
