@@ -1,6 +1,6 @@
 % Import other modules (aka other prolog files)
 :- use_module(input_output,[readLines/3,createSolution/3,printErrorAndClose/2]).
-:- use_module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
+:- use_module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2,split_input_to_list/2]).
 :- use_module(parser,[parse_pairs/2,parse_triples/2,parse_penalty_grid/2]).
 :- use_module(validator,[validTupleMT/2, validTupleTT/2, validTriple/2, validGrid/2]).
 :- use_module(hardconstraints,[checkValidForced/2,checkForcedForbid/3,tooNear/4]).
@@ -18,7 +18,7 @@ main:-
     readLines(Str,LinesOfFile,OutputFileName),
     close(Str), 
 
-    split_string(LinesOfFile,"\n","",ListOfLines),
+    split_input_to_list(LinesOfFile,ListOfLines),
 
     % Check file text for comments or label errors (Scott)
     checkLabels(ListOfLines,OutputFileName),
