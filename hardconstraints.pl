@@ -1,12 +1,26 @@
 % Define module
-:- module(hardconstraints,[tooNear/4]).
+:- module(hardconstraints,[checkValidForced/2,checkForcedForbid/3,tooNear/4]).
 
-% Hard constraint rules
+%Import readLines
+:- use_module(input_output,[readLines/3,printErrorAndClose/2]).
 
+%Checks if forced mach/task repeats in other forced pairs
+checkValidForced([]).
+checkValidForced([_,[]]).
+checkValidForced([H|T],OutputFile):-
+    not(member(H,T)) ->
+    distinct(T) ;
+    printErrorAndClose(OutputFile,"No valid solution possible!").
 
-% Check for repeating forced elements, makes invalid solution
+%Checks if two lists have distinct elements, covers forced-forbidden conflicts
+checkForcedForbid([],[]).
+checkForcedForbid([], _).
+checkForcedForbid(_, []).
+checkForcedForbid([H|T], T2, OutputFile) :-
+    not(member(H, T2)) ->
+    distinct(T, T2) ;
+    printErrorAndClose(OutputFile,"No valid solution possible!").
 
-% Check for forced/forbidden conflicts, makes invalid solution
 
 % Check for too-near invalid pairs
 tooNear([],_,_).
@@ -58,13 +72,3 @@ getRightIndex(Index,IndexR):-
 checkSame(X,Y):- X == Y.
 checkDiff(X,Y):- X \== Y.
 
-%Checks if elements in a list are distinct
-distinct([]).
-distinct([_,[]]).
-distinct([H|T]):-not(member(H,T)),distinct(T).
-
-%Checks if two lists have distinct elements
-distinct([],[]).
-distinct([], _).
-distinct(_, []).
-distinct([H|T], T2) :-not(member(H, T2)),distinct(T, T2).

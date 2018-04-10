@@ -2,7 +2,7 @@
 :- module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
 
 %Import readLines
-:- use_module(input_output,[readLines/2,printErrorAndClose/2]).
+:- use_module(input_output,[readLines/3,printErrorAndClose/2]).
 
 label("Name:").
 label("forced partial assignment:").

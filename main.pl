@@ -1,7 +1,9 @@
 % Import other modules (aka other prolog files)
-:- use_module(input_output,[readLines/2,createSolution/3,printErrorAndClose/2]).
+:- use_module(input_output,[readLines/3,createSolution/3,printErrorAndClose/2]).
 :- use_module(labels,[checkLabels/2,get_forced_partial/2,get_forbidden_machine/2,get_toonear_tasks/2,get_machine_penalties/2,get_toonear_penalties/2]).
-:- use_module(hardconstraints,[tooNear/4]).
+:- use_module(parser,[parse_pairs/2,parse_triples/2,parse_penalty_grid/2]).
+:- use_module(validator,[validTupleMT/2, validTupleTT/2, validTriple/2, validGrid/2]).
+:- use_module(hardconstraints,[checkValidForced/2,checkForcedForbid/3,tooNear/4]).
 :- use_module(softconstraints1,[createAllMatches/2,filterValidMatches/5]).
 :- use_module(softconstraints2,[getBestMatches/6]).
 
@@ -28,16 +30,27 @@ main:-
     get_toonear_penalties(ListOfLines, TooNearPenalties),
 
     % Parse lines of text to get values (Oliver)
+    parse_pairs(ForcedPartial,Forced),
+    parse_pairs(ForbiddenMachine,Forbid),
+    parse_pairs(TooNearTasks,TooNear),
+    parse_penalty_grid(MachinePenalties,Grid),
+    parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
+    validTupleMT(Forced,OutputFileName),
+    validTupleMT(Forbid,OutputFileName),
+    validTupleTT(TooNear,OutputFileName),
+    validGrid(Grid,OutputFileName),
+    validTriple(TooNearPen,OutputFileName),
 
     % Check hard constraints (Fungai, Jacky)
-    % tooNear(ListOfMatches,ListOfMatches,TooNear,ValidMatches),
+    checkValidForced(Forced,OutputFileName),
+    checkForcedForbid(Forced,Forbid,OutputFileName),
 
     % Check soft constraints
     createAllMatches(["A","B","C","D","E","F","G","H"],AllMatches),
     filterValidMatches(AllMatches,Forced,Forbid,TooNear,ValidMatches),
-    getBestMatches(ValidMatches,ValidMatches,Grid,TooNear,Total,BestMatches),
+    getBestMatches(ValidMatches,ValidMatches,Grid,TooNearPen,Total,BestMatches),
 
     % Close file and write output
     createSolution(BestMatches,Total,Solution),

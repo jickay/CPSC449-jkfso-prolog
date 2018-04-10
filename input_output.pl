@@ -1,5 +1,5 @@
 % Define module
-:- module(input_output,[readLines/2,createSolution/3,printErrorAndClose/2]).
+:- module(input_output,[readLines/3,createSolution/3,printErrorAndClose/2]).
 
 % Read all lines in file
 readLines(InStream,W,OutputFile):- 
