@@ -1,7 +1,10 @@
+% initialization needed for exe to run main automatically 
+% (COMMENT OUT TO PREVENT RUNNING AUTOMATICALLY WHEN TESTING)
+
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/invalid2.txt').
+getInputName('TestFiles/wrongtask.txt').
 getOutputName('output2.txt').
 
 % Main functor
@@ -38,7 +41,7 @@ main:-
     print(TooNearPenalties),
 
     % Parse lines of text to get values (Oliver)
-    spy(parse_pairs),
+    % spy(parse_pairs),
     parse_pairs(ForcedPartial,Forced),
     parse_pairs(ForbiddenMachine,Forbid),
     parse_pairs(TooNearTasks,TooNear),
@@ -46,7 +49,7 @@ main:-
     parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
-    % spy(validTupleMT),
+    spy(validTupleMT),
     validTupleMT(Forced,OutputFileName),
     validTupleMT(Forbid,OutputFileName),
     validTupleTT(TooNear,OutputFileName),
@@ -426,11 +429,12 @@ validTupleTT([],_).
 validTupleTT([[Task1,Task2|_]|Tuples],OutputFile):-
     isTask(Task1),
     isTask(Task2) ->
-    validTupleMT(Tuples,OutputFile);
+    validTupleTT(Tuples,OutputFile);
     printErrorAndClose(OutputFile,'invalid machine/task').
 
 % Validate triples (t,t,p)
 validTriple([],_).
+validTriple([[]],_).
 validTriple([[Task1,Task2,Pen|_]|Triples],OutputFile):-
     checkTask(Task1,Task2,OutputFile),
     checkPen(Pen,OutputFile),
@@ -465,19 +469,23 @@ forcedDouble([[Mach,Task]|ListOfForced],OutputFileName):-
     checkForcedTailTask(Task,ListOfForced);
     forcedDouble(ListOfForced,OutputFileName).
 
+checkForcedTailMach(_,[]).
 checkForcedTailMach(Mach,[[Mach2,_]|ListOfForced]):-
     Mach = Mach2;
     checkForcedTailMach(Mach,ListOfForced).
 
+checkForcedTailTask(_,[]).
 checkForcedTailTask(Task,[[_,Task2]|ListOfForced]):-
     Task = Task2;
     checkForcedTailTask(Task,ListOfForced).
 
 % Check for forced/forbidden conflicts, makes invalid solution
+forcedConflicts([],_).
 forcedConflicts([[Mach,Task]|ListOfForced],ListofForbid,OutputFileName):-
     checkForbidTail(Mach,Task,ListofForbid);
     forcedConflicts(ListOfForced,ListofForbid,OutputFileName).
 
+checkForbidTail(_,_,[]).
 checkForbidTail(Mach,Task,[[Mach2,Task2]|ListofForbid]):-
     Mach = Mach2, Task = Task2;
     checkForbidTail(Mach,Task,ListofForbid).
