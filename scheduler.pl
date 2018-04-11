@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongmachpenalty1.txt').
-getOutputName('output_wmp1.txt').
+getInputName('TestFiles/wrongkeyword2.txt').
+getOutputName('output_wkw2.txt').
 
 % Main functor
 main:-
@@ -25,7 +25,8 @@ main:-
 
     % Check file text for comments or label errors (Scott)
     % spy(checkLabels),
-    checkLabels(ListOfLines,OutputFileName),
+    Labels = ['Name:','forced partial assignment:','forbidden machine:','too-near tasks:','machine penalties:','too-near penalities'],
+    checkLabels(Labels,ListOfLines,OutputFileName),
     % print(ListOfLines),
 
     % spy(get_forced_partial),
@@ -143,9 +144,9 @@ label('too-near penalities').
 % label(['Name:','forced partial assignment:','forbidden machine:','too-near tasks:','machine penalties:','too-near penalities']).
 
 %Takes in list of lines from input, checks if the labels are all there
-checkLabels(ListOfLines, OutputFile):-
-    % label(X),
-    forall(label(X),memberchk(X, ListOfLines));
+checkLabels([L|Labels], ListOfLines, OutputFile):-
+    memberchk(L,ListOfLines),
+    checkLabels(Labels,ListOfLines,OutputFile);
     printErrorAndClose(OutputFile,'Error while parsing input file').
 
 %Recursively checks if X is a member of a list
