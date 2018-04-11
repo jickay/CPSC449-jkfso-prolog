@@ -7,21 +7,21 @@ getOutputName('output.txt').
 % Main functor
 main:-
     % Get console argument values (COMMENT OUT FOR TESTING)
-    current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
+    % current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
 
     % Manually set input file (COMMENT OUT FOR FINAL VERS)
-    % getInputName(InputFileName),
-    % getOutputName(OutputFileName),
+    getInputName(InputFileName),
+    getOutputName(OutputFileName),
 
     % Open file and get lines of text
     getLines(InputFileName,OutputFileName,LinesOfFile),
 
-    % spy(split_input_to_list),
+    % spy(splitlines),
     splitlines(LinesOfFile,ListOfLines),
     print(ListOfLines),
 
     % Check file text for comments or label errors (Scott)
-    % spy(checkLabels),
+    spy(checkLabels),
     checkLabels(ListOfLines,OutputFileName),
     % print(ListOfLines),
 
@@ -142,12 +142,8 @@ label('too-near penalities').
 %Takes in list of lines from input, checks if the labels are all there
 checkLabels(ListOfLines, OutputFile):-
     % label(X),
-    forall(label(X),checkLabel(X,ListOfLines));
+    forall(label(X),memberchk(X, ListOfLines));
     printErrorAndClose(OutputFile,'Error while parsing input file').
-
-checkLabel(Label,ListOfLines):-
-    atom_chars(Label,Chars),
-    memberchk(Chars, ListOfLines).
 
 %Recursively checks if X is a member of a list
 % is_member(_, [], OutputFile):-
@@ -183,11 +179,12 @@ get_machine_penalties(List, Partial2):-
 get_toonear_penalties(List, Partial2):-
     split(List, 'too-near penalities', _, Partial2).
 
+
 % Split input into lists based on newline
 splitlines(InputText,List):-
     atom_chars(InputText, Chars),
-    new_split_string(Chars, [], List).
-    % convert_back(Temp, List).
+    new_split_string(Chars, [], Temp),
+    convert_back(Temp, List).
 
 % new_split_string(['\n'|Last],CurrentList,Final):-
 %     append(CurrentList,[Last],Final).
