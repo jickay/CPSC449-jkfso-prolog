@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongtask.txt').
-getOutputName('output2.txt').
+getInputName('TestFiles/wrongpartialassignment.txt').
+getOutputName('output_wpa.txt').
 
 % Main functor
 main:-
@@ -49,7 +49,7 @@ main:-
     parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
-    spy(validTupleMT),
+    % spy(validTupleMT),
     validTupleMT(Forced,OutputFileName),
     validTupleMT(Forbid,OutputFileName),
     validTupleTT(TooNear,OutputFileName),
@@ -57,7 +57,7 @@ main:-
     validTriple(TooNearPen,OutputFileName),
 
     % Check hard constraints (Fungai, Jacky)
-    % spy(forcedDouble),
+    spy(forcedDouble),
     forcedDouble(Forced,OutputFileName),
     forcedConflicts(Forced,Forbid,OutputFileName),
 
@@ -290,9 +290,9 @@ parse_penalty_grid(Lines, X) :-
 parse_penalty_grid(Lines, X):-	
     [Head|Tail] = Lines,
     atom_chars(Head,Row),
-    parseRow(Row,Num),
+    parseRow(Row,Values),
     parse_penalty_grid(Tail, Y),
-    X = [Num|Y].
+    X = [Values|Y].
 
 parseRow([],[]).
 parseRow([R|Row],Values):-
@@ -413,7 +413,8 @@ isMachine(Elem):-
     member(Elem, ['1','2','3','4','5','6','7','8']).
 isTask(Elem):- 
     member(Elem,['A','B','C','D','E','F','G','H']).
-isPen(Num):- 
+isPen(Num):-
+    integer(Num),
     Num >= 0.
 
 % Validate tuples (m,t)
@@ -456,9 +457,12 @@ validRow([Num|Row]):-
     validRow(Row).
 
 validGrid([],_).
-validGrid([Row|Grid],OutputFile):-
+validGrid(Grid,OutputFile):-
+    [Row|GTail] = Grid,
+    length(Grid,8),
+    length(Row,8),
     validRow(Row) ->
-    validGrid(Grid,OutputFile);
+    validGrid(GTail,OutputFile);
     printErrorAndClose(OutputFile,'invalid penalty').
 
 %%%%%%%%%%%%%%%%%%%% Hard constraints %%%%%%%%%%%%%%%%%%%%%%%
