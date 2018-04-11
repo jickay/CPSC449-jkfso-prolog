@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongkeyword2.txt').
-getOutputName('output_wkw2.txt').
+getInputName('TestFiles/invalidtoonear.txt').
+getOutputName('output_ivtn.txt').
 
 % Main functor
 main:-
@@ -61,6 +61,10 @@ main:-
     % spy(forcedDouble),
     forcedDouble(Forced,OutputFileName),
     forcedConflicts(Forced,Forbid,OutputFileName),
+
+    % Make matches
+    spy(createForcedMatches),
+    createForcedMatches(Forced,ForcedMatches),
 
     % Check soft constraints
     % createAllMatches(['A','B','C','D','E','F','G','H'],AllMatches),
@@ -144,6 +148,7 @@ label('too-near penalities').
 % label(['Name:','forced partial assignment:','forbidden machine:','too-near tasks:','machine penalties:','too-near penalities']).
 
 %Takes in list of lines from input, checks if the labels are all there
+checkLabels([],_,_).
 checkLabels([L|Labels], ListOfLines, OutputFile):-
     memberchk(L,ListOfLines),
     checkLabels(Labels,ListOfLines,OutputFile);
@@ -557,6 +562,25 @@ checkRight(M,Matches,[[Left,Right]|TooNear]):-
     checkDiff(MRight,Right),
     checkRight(M,Matches,TooNear) ;
     checkRight(M,Matches,TooNear).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+createForcedMatches([],_,_).
+createForcedMatches([[Mach,Task]|Forced],ForcedMatches):-
+    number_atom(Index,Mach),
+    replace_nth(ForcedMatches,Index,Task,Filled),
+    createForcedMatches(Forced,Filled).
+
+replace_nth(Matches,Index,Task,Filled):-
+    atom_chars(Matches,CharsA),
+    % atom_chars(Filled,CharsB),
+    length(CharsA,A),
+    length(Filled,B),
+    A = B,
+    append(Prefix, [_|Suffix], CharsA),
+    length(Prefix, Index),
+    append(Prefix, [Task|Suffix], Filled).
+
 
 %%%%%%%%%%%%%%%%%%%%% Soft Constraints, valid matches %%%%%%%%%%%%%%%%%%%%%%
 
