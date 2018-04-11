@@ -487,7 +487,7 @@ validRow([Num|Row]):-
 %%%%%%%%%%%%%%%%%%%% Hard constraints %%%%%%%%%%%%%%%%%%%%%%%
 
 %Checks if all pair are valid. Return false if they are not. True if they are
-forcedDouble([]).
+forcedDouble([],_).
 forcedDouble([[Mach,Task]|ForcedListRem], OutputFile) :- 
     checkTail(Mach,ForcedListRem), 
     checkTail(Task,ForcedListRem), 
