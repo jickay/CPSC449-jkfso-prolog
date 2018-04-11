@@ -1,8 +1,8 @@
-:- initialization(main).
+% :- initialization(main).
 :- dynamic(main/0).
 
 getInputName('TestFiles/invalid2.txt').
-getOutputName('output.txt').
+getOutputName('output2.txt').
 
 % Main functor
 main:-
@@ -21,7 +21,7 @@ main:-
     print(ListOfLines),
 
     % Check file text for comments or label errors (Scott)
-    spy(checkLabels),
+    % spy(checkLabels),
     checkLabels(ListOfLines,OutputFileName),
     % print(ListOfLines),
 
@@ -38,7 +38,7 @@ main:-
     print(TooNearPenalties),
 
     % Parse lines of text to get values (Oliver)
-    % spy(parse_pairs),
+    spy(parse_pairs),
     parse_pairs(ForcedPartial,Forced),
     parse_pairs(ForbiddenMachine,Forbid),
     parse_pairs(TooNearTasks,TooNear),
@@ -235,8 +235,8 @@ parse_pairs(Lines, X):-
 */
 parse_pair([],[]).
 parse_pair(Line, Values) :-
-    nth(2,Pair,Val1),
-    nth(4,Pair,Val2),
+    nth(2,Line,Val1),
+    nth(4,Line,Val2),
     Values = [Val1,Val2].
     
     
@@ -264,9 +264,9 @@ parse_triples(Lines, X):-
  */
 parse_triple([],[]).
 parse_triple(Line, Values) :-
-    nth(2, Triple, Machine),
-    nth(4, Triple, Task),
-    nth(6, Triple, Pen),
+    nth(2, Line, Machine),
+    nth(4, Line, Task),
+    nth(6, Line, Pen),
     % ['(', Machine, ',', Task, ',', Pen, ')'] = Line,
     % parse_penalty_triple(PEN, PenaltyList),
     % concatenate_num(PenaltyList, PenaltyAtom),
