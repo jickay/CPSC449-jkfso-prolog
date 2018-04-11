@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongpartialassignment.txt').
-getOutputName('output_wpa.txt').
+getInputName('TestFiles/wrongmachpenalty1.txt').
+getOutputName('output_wmp1.txt').
 
 % Main functor
 main:-
@@ -49,7 +49,7 @@ main:-
     parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
-    % spy(validTupleMT),
+    spy(validTupleMT),
     validTupleMT(Forced,OutputFileName),
     validTupleMT(Forbid,OutputFileName),
     validTupleTT(TooNear,OutputFileName),
@@ -57,7 +57,7 @@ main:-
     validTriple(TooNearPen,OutputFileName),
 
     % Check hard constraints (Fungai, Jacky)
-    spy(forcedDouble),
+    % spy(forcedDouble),
     forcedDouble(Forced,OutputFileName),
     forcedConflicts(Forced,Forbid,OutputFileName),
 
@@ -273,7 +273,7 @@ parse_triple(Line, Values) :-
     % ['(', Machine, ',', Task, ',', Pen, ')'] = Line,
     % parse_penalty_triple(PEN, PenaltyList),
     % concatenate_num(PenaltyList, PenaltyAtom),
-    % number_atom(Penalty, Pen),
+    number_atom(Penalty, Pen),
     Values = [Machine, Task, Penalty].
 
     
@@ -439,7 +439,7 @@ validTriple([[]],_).
 validTriple([[Task1,Task2,Pen|_]|Triples],OutputFile):-
     checkTask(Task1,Task2,OutputFile),
     checkPen(Pen,OutputFile),
-    validTupleMT(Triples,OutputFile).
+    validTriple(Triples,OutputFile).
 
 checkTask(Task1,Task2,OutputFile):-
     isTask(Task1),
@@ -451,37 +451,63 @@ checkPen(Pen,OutputFile):-
     printErrorAndClose(OutputFile,'invalid penalty').
 
 % Validate grid
+validGrid(Grid,OutputFile):-
+    validGridSizeRow(Grid,OutputFile),
+    validGridSizeCol(Grid,OutputFile),
+    validGridValues(Grid,OutputFile).
+
+validGridSizeRow(Grid,OutputFile):-
+    length(Grid,8);
+    printErrorAndClose(OutputFile,'invalid penalty').
+
+validGridSizeCol([],_).
+validGridSizeCol([Row|Grid],OutputFile):-
+    length(Row,8),
+    validGridSizeCol(Grid,OutputFile);
+    printErrorAndClose(OutputFile,'invalid penalty').
+
+validGridValues([],_).
+validGridValues(Grid,OutputFile):-
+    [Row|GTail] = Grid,
+    validRow(Row) ->
+    validGridValues(GTail,OutputFile);
+    printErrorAndClose(OutputFile,'invalid penalty').
+
 validRow([]).
 validRow([Num|Row]):-
     isPen(Num),
     validRow(Row).
 
-validGrid([],_).
-validGrid(Grid,OutputFile):-
-    [Row|GTail] = Grid,
-    length(Grid,8),
-    length(Row,8),
-    validRow(Row) ->
-    validGrid(GTail,OutputFile);
-    printErrorAndClose(OutputFile,'invalid penalty').
-
 %%%%%%%%%%%%%%%%%%%% Hard constraints %%%%%%%%%%%%%%%%%%%%%%%
 
+%Checks if all pair are valid. Return false if they are not. True if they are
+forcedDouble([]).
+forcedDouble([[Mach,Task]|ForcedListRem], OutputFile) :- 
+    checkTail(Mach,ForcedListRem), 
+    checkTail(Task,ForcedListRem), 
+    forcedDouble(ForcedListRem, OutputFile);
+    printErrorAndClose(OutputFile,'No valid solution possible!').
+
+checkTail(_, []).
+checkTail(MachOrTask, [Head|Tail]) :- 
+    \+ member(MachOrTask ,Head), 
+    checkTail(MachOrTask,Tail).
+
 % Check for repeating forced elements, makes invalid solution
-forcedDouble([[Mach,Task]|ListOfForced],OutputFileName):-
-    checkForcedTailMach(Mach,ListOfForced);
-    checkForcedTailTask(Task,ListOfForced);
-    forcedDouble(ListOfForced,OutputFileName).
+% forcedDouble([[Mach,Task]|ListOfForced],OutputFileName):-
+%     checkForcedTailMach(Mach,ListOfForced);
+%     checkForcedTailTask(Task,ListOfForced);
+%     forcedDouble(ListOfForced,OutputFileName).
 
-checkForcedTailMach(_,[]).
-checkForcedTailMach(Mach,[[Mach2,_]|ListOfForced]):-
-    Mach = Mach2;
-    checkForcedTailMach(Mach,ListOfForced).
+% checkForcedTailMach(_,[]).
+% checkForcedTailMach(Mach,[[Mach2,_]|ListOfForced]):-
+%     Mach = Mach2;
+%     checkForcedTailMach(Mach,ListOfForced).
 
-checkForcedTailTask(_,[]).
-checkForcedTailTask(Task,[[_,Task2]|ListOfForced]):-
-    Task = Task2;
-    checkForcedTailTask(Task,ListOfForced).
+% checkForcedTailTask(_,[]).
+% checkForcedTailTask(Task,[[_,Task2]|ListOfForced]):-
+%     Task = Task2;
+%     checkForcedTailTask(Task,ListOfForced).
 
 % Check for forced/forbidden conflicts, makes invalid solution
 forcedConflicts([],_).
