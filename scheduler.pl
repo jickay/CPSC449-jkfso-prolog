@@ -1,20 +1,20 @@
 % initialization needed for exe to run main automatically 
 % (COMMENT OUT TO PREVENT RUNNING AUTOMATICALLY WHEN TESTING)
 
-% :- initialization(main).
+:- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongnumbermachine.txt').
-getOutputName('output_wnm.txt').
+getInputName('TestFiles/wrongmachine.txt').
+getOutputName('output_wm.txt').
 
 % Main functor
 main:-
     % Get console argument values (COMMENT OUT FOR TESTING)
-    % current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
+    current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
 
     % Manually set input file (COMMENT OUT FOR FINAL VERS)
-    getInputName(InputFileName),
-    getOutputName(OutputFileName),
+    % getInputName(InputFileName),
+    % getOutputName(OutputFileName),
 
     % Open file and get lines of text
     getLines(InputFileName,OutputFileName,LinesOfFile),
@@ -593,7 +593,7 @@ fillMatches([],_,X,X,_).
 fillMatches([T|Tasks],TooNear,ForcedMatches,FilledMatches,OutputFile):-
     nth(Index,ForcedMatches,'x'),
     replace_nth(ForcedMatches,Index,T,Filled),
-    noTooNear(Filled,Filled,TooNear,OutputFile),
+    noTooNear(Filled,Filled,TooNear),
     fillMatches(Tasks,TooNear,Filled,FilledMatches,OutputFile);
     printErrorAndClose(OutputFile,'No valid solution possible!').
 
