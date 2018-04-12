@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongnumbertoonear.txt').
-getOutputName('output_wntn.txt').
+getInputName('TestFiles/wrongkeyword2.txt').
+getOutputName('output_wkw2.txt').
 
 % Main functor
 main:-
@@ -156,17 +156,17 @@ label('too-near penalities').
 %Takes in list of lines from input, checks if the labels are all there
 checkLabels([],_,_).
 checkLabels([L|Labels], ListOfLines, OutputFile):-
-    member(L,ListOfLines),
-    checkLabels(Labels,ListOfLines,OutputFile);
-    printErrorAndClose(OutputFile,'Error while parsing input file').
+    is_member(L,ListOfLines,OutputFile),
+    checkLabels(Labels,ListOfLines,OutputFile).
+    % printErrorAndClose(OutputFile,'Error while parsing input file').
 
 %Recursively checks if X is a member of a list
-% is_member(_, [], OutputFile):-
-%     printErrorAndClose(OutputFile,'Error while parsing input file'),
-%     false.
-% is_member(X,[X|_],_):- !.
-% is_member(X,[_|Ys],OutputFile):-
-%     is_member(X,Ys,OutputFile).
+is_member(_, [], OutputFile):-
+    printErrorAndClose(OutputFile,'Error while parsing input file'),
+    false.
+is_member(X,[X|_],_):- !.
+is_member(X,[_|Ys],OutputFile):-
+    is_member(X,Ys,OutputFile).
 
 split(List, Pivot, Left, Right) :- append(Left, [Pivot|Right], List).
 
