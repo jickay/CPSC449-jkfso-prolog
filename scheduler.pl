@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/invalidtoonear.txt').
-getOutputName('output_ivtn.txt').
+getInputName('TestFiles/wrongnumbertoonear.txt').
+getOutputName('output_wntn.txt').
 
 % Main functor
 main:-
@@ -50,7 +50,7 @@ main:-
     parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
-    spy(validTupleMT),
+    % spy(validTupleMT),
     validTupleMT(Forced,OutputFileName),
     validTupleMT(Forbid,OutputFileName),
     validTupleTT(TooNear,OutputFileName),
@@ -64,7 +64,13 @@ main:-
 
     % Make matches
     spy(createForcedMatches),
-    createForcedMatches(Forced,ForcedMatches),
+    Empty = ['x','x','x','x','x','x','x','x'],
+    AllTasks = ['A','B','C','D','E','F','G','H'],
+    createForcedMatches(Forced,Empty,ForcedMatches),
+    print(ForcedMatches),
+    getRemainingTasks(ForcedMatches,AllTasks,RemainingTasks),
+    print(RemainingTasks),
+    fillMatches(RemainingTasks,TooNear,ForcedMatches,FilledMatches,OutputFileName),
 
     % Check soft constraints
     % createAllMatches(['A','B','C','D','E','F','G','H'],AllMatches),
@@ -150,7 +156,7 @@ label('too-near penalities').
 %Takes in list of lines from input, checks if the labels are all there
 checkLabels([],_,_).
 checkLabels([L|Labels], ListOfLines, OutputFile):-
-    memberchk(L,ListOfLines),
+    member(L,ListOfLines),
     checkLabels(Labels,ListOfLines,OutputFile);
     printErrorAndClose(OutputFile,'Error while parsing input file').
 
@@ -279,7 +285,7 @@ parse_triple(Line, Values) :-
     % ['(', Machine, ',', Task, ',', Pen, ')'] = Line,
     % parse_penalty_triple(PEN, PenaltyList),
     % concatenate_num(PenaltyList, PenaltyAtom),
-    number_atom(Penalty, Pen),
+    % number_atom(Penalty, Pen),
     Values = [Machine, Task, Penalty].
 
     
@@ -492,7 +498,7 @@ forcedDouble([[Mach,Task]|ForcedListRem], OutputFile) :-
     checkTail(Mach,ForcedListRem), 
     checkTail(Task,ForcedListRem), 
     forcedDouble(ForcedListRem, OutputFile);
-    printErrorAndClose(OutputFile,'No valid solution possible!').
+    printErrorAndClose(OutputFile,'partial assignment error').
 
 checkTail(_, []).
 checkTail(MachOrTask, [Head|Tail]) :- 
@@ -565,20 +571,34 @@ checkRight(M,Matches,[[Left,Right]|TooNear]):-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-createForcedMatches([],_,_).
-createForcedMatches([[Mach,Task]|Forced],ForcedMatches):-
+createForcedMatches([],X,X).
+createForcedMatches([[Mach,Task]|Forced],Temp,ForcedMatches):-
     number_atom(Index,Mach),
-    replace_nth(ForcedMatches,Index,Task,Filled),
-    createForcedMatches(Forced,Filled).
+    replace_nth(Temp,Index,Task,Filled),
+    createForcedMatches(Forced,Filled,ForcedMatches).
+
+getRemainingTasks(['x'|_],X,X).
+getRemainingTasks([FM|ForcedMatches],Temp,RemainingTasks):-
+    memberchk(FM,Temp),
+    select(FM,Temp,Remaining),
+    getRemainingTasks(ForcedMatches,Remaining,RemainingTasks);
+    getRemainingTasks(ForcedMatches,Temp,RemainingTasks).
+
+fillMatches([],_,X,X,_).
+fillMatches([T|Tasks],TooNear,ForcedMatches,FilledMatches,OutputFile):-
+    nth(Index,ForcedMatches,'x'),
+    replace_nth(ForcedMatches,Index,T,Filled),
+    noTooNear(Filled,Filled,TooNear,OutputFile),
+    fillMatches(Tasks,TooNear,Filled,FilledMatches,OutputFile);
+    printErrorAndClose(OutputFile,'No valid solution possible!').
 
 replace_nth(Matches,Index,Task,Filled):-
-    atom_chars(Matches,CharsA),
-    % atom_chars(Filled,CharsB),
-    length(CharsA,A),
+    NI is Index -1,
+    length(Matches,A),
     length(Filled,B),
     A = B,
-    append(Prefix, [_|Suffix], CharsA),
-    length(Prefix, Index),
+    append(Prefix, [_|Suffix], Matches),
+    length(Prefix, NI),
     append(Prefix, [Task|Suffix], Filled).
 
 
