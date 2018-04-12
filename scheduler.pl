@@ -281,7 +281,7 @@ parse_triple([],[]).
 parse_triple(Line, Values) :-
     nth(2, Line, Machine),
     nth(4, Line, Task),
-    nth(6, Line, Pen),
+    nth(6, Line, Penalty),
     % ['(', Machine, ',', Task, ',', Pen, ')'] = Line,
     % parse_penalty_triple(PEN, PenaltyList),
     % concatenate_num(PenaltyList, PenaltyAtom),
@@ -464,7 +464,8 @@ checkTask(Task1,Task2,OutputFile):-
     printErrorAndClose(OutputFile,'invalid task').
 
 checkPen(Pen,OutputFile):-
-    isPen(Pen) -> true ;
+    number_atom(Num,Pen),
+    isPen(Num) -> true ;
     printErrorAndClose(OutputFile,'invalid penalty').
 
 % Validate grid
