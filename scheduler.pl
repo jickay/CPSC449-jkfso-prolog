@@ -470,13 +470,13 @@ validGrid(Grid,OutputFile):-
 
 validGridSizeRow(Grid,OutputFile):-
     length(Grid,8);
-    printErrorAndClose(OutputFile,'invalid penalty').
+    printErrorAndClose(OutputFile,'machine penalty error').
 
 validGridSizeCol([],_).
 validGridSizeCol([Row|Grid],OutputFile):-
     length(Row,8),
     validGridSizeCol(Grid,OutputFile);
-    printErrorAndClose(OutputFile,'invalid penalty').
+    printErrorAndClose(OutputFile,'machine penalty error').
 
 validGridValues([],_).
 validGridValues(Grid,OutputFile):-
