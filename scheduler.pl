@@ -294,9 +294,9 @@ parse_triple(Line, Values) :-
     * Ex : parse_penalty_grid([[8,8,8,',',7,7,7,',',6,6,',',5,5,',',4,4,',',3,',',2,',',1], [8,',',7,',',6,',',5,',',4,',',3,',',2,',',1]], X).
     */
 
-parse_penalty_grid([''],[]).
-parse_penalty_grid([' '],[]).
-parse_penalty_grid(Lines, X) :-
+parse_penalty_grid([''],[], OutputFile).
+parse_penalty_grid([' '],[], OutputFile).
+parse_penalty_grid(Lines, X, OutputFile) :-
     Lines = [],
     X = Lines. 
 parse_penalty_grid(Lines, X, OutputFile):-	
