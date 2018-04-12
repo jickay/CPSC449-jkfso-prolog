@@ -4,8 +4,8 @@
 % :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongkeyword2.txt').
-getOutputName('output_wkw2.txt').
+getInputName('TestFiles/wrongnumbermachine.txt').
+getOutputName('output_wnm.txt').
 
 % Main functor
 main:-
@@ -46,7 +46,7 @@ main:-
     parse_pairs(ForcedPartial,Forced),
     parse_pairs(ForbiddenMachine,Forbid),
     parse_pairs(TooNearTasks,TooNear),
-    parse_penalty_grid(MachinePenalties,Grid),
+    parse_penalty_grid(MachinePenalties,Grid,OutputFileName),
     parse_triples(TooNearPenalties,TooNearPen),
 
     % Check parsed values for errors (Khalid)
@@ -299,11 +299,12 @@ parse_penalty_grid([' '],[]).
 parse_penalty_grid(Lines, X) :-
     Lines = [],
     X = Lines. 
-parse_penalty_grid(Lines, X):-	
+parse_penalty_grid(Lines, X, OutputFile):-	
     [Head|Tail] = Lines,
     atom_chars(Head,Row),
+    \+ checkPeriod(Row,OutputFile),
     parseRow(Row,Values),
-    parse_penalty_grid(Tail, Y),
+    parse_penalty_grid(Tail, Y, OutputFile),
     X = [Values|Y].
 
 parseRow([],[]).
@@ -313,6 +314,10 @@ parseRow([R|Row],Values):-
     parseRow(Row,Y),
     Values = [Num|Y];
     parseRow(Row,Values).
+
+checkPeriod(Row,OutputFile):-
+    memberchk('.',Row),
+    printErrorAndClose(OutputFile,'invalid penalty').
 
 checkSpace(R):-
     char_code(SP,32),
