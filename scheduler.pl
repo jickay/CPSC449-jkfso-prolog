@@ -1,20 +1,20 @@
 % initialization needed for exe to run main automatically 
 % (COMMENT OUT TO PREVENT RUNNING AUTOMATICALLY WHEN TESTING)
 
-:- initialization(main).
+% :- initialization(main).
 :- dynamic(main/0).
 
-getInputName('TestFiles/wrongmachine.txt').
-getOutputName('output_wm.txt').
+getInputName('TestFiles/invalid2.txt').
+getOutputName('output_iv2.txt').
 
 % Main functor
 main:-
     % Get console argument values (COMMENT OUT FOR TESTING)
-    current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
+    % current_prolog_flag(argv, [_,InputFileName,OutputFileName|_]),
 
     % Manually set input file (COMMENT OUT FOR FINAL VERS)
-    % getInputName(InputFileName),
-    % getOutputName(OutputFileName),
+    getInputName(InputFileName),
+    getOutputName(OutputFileName),
 
     % Open file and get lines of text
     getLines(InputFileName,OutputFileName,LinesOfFile),
@@ -540,20 +540,22 @@ checkForbidTail(Mach,Task,[[Mach2,Task2]|ListofForbid]):-
 
 
 % Check for too-near invalid pairs
-tooNear([],_,_).
-tooNear([Matches|ListMTail],ListOfMatches,TooNear,ValidMatches):-
+tooNear([],_,_,_).
+tooNear([Matches|ListMTail],ListOfMatches,TooNear,ValidMatches,OutputFile):-
     % head(ListOfMatches,Matches),
-    noTooNear(Matches,Matches,TooNear) ->
-    tooNear(ListMTail,TooNear,ValidMatches) ;
+    noTooNear(Matches,Matches,TooNear,OutputFile) ->
+    tooNear(ListMTail,TooNear,ValidMatches,OutputFile) ;
     select(Matches,ListOfMatches,ValidMatches),
-    tooNear(ListMTail,TooNear,ValidMatches).
+    tooNear(ListMTail,TooNear,ValidMatches,OutputFile).
 
 % See if too-near violation in a set of matches
-noTooNear(_,[],_).
-noTooNear(Matches,[M|MTail],TooNear):-
+noTooNear(_,[],_,_).
+noTooNear(Matches,[M|MTail],TooNear,OutputFile):-
     checkLeft(M,Matches,TooNear),
     checkRight(M,Matches,TooNear),
-    noTooNear(Matches,MTail,TooNear).
+    noTooNear(Matches,MTail,TooNear,OutputFile);
+    printErrorAndClose(OutputFile,'No valid solution possible!').
+
 
 checkLeft(_,_,[]).
 checkLeft(M,Matches,[[Left,Right]|TooNear]):-
@@ -594,7 +596,7 @@ fillMatches([],_,X,X,_).
 fillMatches([T|Tasks],TooNear,ForcedMatches,FilledMatches,OutputFile):-
     nth(Index,ForcedMatches,'x'),
     replace_nth(ForcedMatches,Index,T,Filled),
-    noTooNear(Filled,Filled,TooNear),
+    noTooNear(Filled,Filled,TooNear,OutputFile),
     fillMatches(Tasks,TooNear,Filled,FilledMatches,OutputFile);
     printErrorAndClose(OutputFile,'No valid solution possible!').
 
